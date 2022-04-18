@@ -1,0 +1,34 @@
+{
+  "name": "dev.gena",
+  "version": "1.0.0",
+  "description": "A discord bot for detect a bot command and assign a temporal rol.",
+  "main": "src/index.js",
+  "scripts": {
+    "lint": "eslint src/",
+    "start": "node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Genarion/dev.gena.git"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "js",
+    "discordjs"
+  ],
+  "author": "Genarion",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Genarion/dev.gena/issues"
+  },
+  "homepage": "https://github.com/Genarion/dev.gena#readme",
+  "dependencies": {
+    "discord.js": "^13.6.0",
+    "dotenv": "^16.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0"
+  }
+}
