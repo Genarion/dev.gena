@@ -47,7 +47,7 @@ client.on('messageCreate', message => {
     console.log('hello canarias')
     console.log(message)
     let server = client.guilds.cache.get( data['server-id'] );
-    let role = await server.roles.fetch( 0 );
+    let role = server.roles.fetch( 0 );
 
     data['role-id'] = role.id
     fs.writeFileSync( 'data.json', JSON.stringify( data ));
