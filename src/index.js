@@ -32,47 +32,30 @@ client.on('messageCreate', message => {
   console.log(message)
   if ( message.type === 'APPLICATION_COMMAND' && message.interaction.commandName === 'debug' && message.embeds[0].description.includes('Server') ){
 
-    const server = client.guilds.cache.get( data['server-id'] );
-    const member = server.members.fetch( message.author.id );
+    const server = client.guilds.fetch( data['server-id'] );
+    const member = server.members.fetch( message.interaction.user.id );
     member.roles.add( data['role-id'] );
 
     //change the value in the in-memory object
     data.time = Date.now()
-    data['user-id'] = message.author.id
+    data['user-id'] = message.interaction.user.id
   
     //Serialize as JSON and Write it to a file
     fs.writeFileSync( __dirname + '/data.json', JSON.stringify( data ));
 
   }else if( message.type === 'DEFAULT' && message.author.id === '343380089083396107' && message.content.includes('canarias') ){
-    console.log('hello canarias')
-    console.log(message)
-    let server = client.guilds.cache.get( data['server-id'] );
-    let role = server.roles.fetch( 0 );
+    console.log('configurando rol')
 
-    data['role-id'] = role.id
+    let tempRolId = message.mentions.roles.keys().next().value
+
+    let server = client.guilds.fetch( data['server-id'] );
+    let role = server.roles.fetch( tempRolId );
+
+    data['role-id'] = tempRolId
     fs.writeFileSync( __dirname + '/data.json', JSON.stringify( data ));
 
   }
 })
-
-
-//test for new implementations
-module.exports = {
-  name: "set-role",
-  aliases: ["sr"],
-  description: "config the rol that will applied to the winner",
-  category: "category",
-  guildOnly: true,
-  memberpermissions:"VIEW_CHANNEL",
-  adminPermOverride: true,
-  cooldown: 2,
-  //args: args,
-  usage: "<usage>",
-  execute(message, args) {
-    message.reply("template command")
-    console.table(message)
-  },
-};
 
 
 // Login to Discord with your client's token
