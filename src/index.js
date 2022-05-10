@@ -6,7 +6,7 @@ const { Client, Intents } = require('discord.js');
 // Create a new client instance
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 
-let file_content = fs.readFileSync( 'data.json' );
+let file_content = fs.readFileSync( __dirname + '/src/data.json' );
 let data = JSON.parse( file_content );
 
 
@@ -41,7 +41,7 @@ client.on('messageCreate', message => {
     data['user-id'] = message.author.id
   
     //Serialize as JSON and Write it to a file
-    fs.writeFileSync( 'data.json', JSON.stringify( data ));
+    fs.writeFileSync( __dirname + '/src/data.json', JSON.stringify( data ));
 
   }else if( message.type === 'DEFAULT' && message.author.id === '343380089083396107' && message.content.includes('canarias') ){
     console.log('hello canarias')
@@ -50,7 +50,7 @@ client.on('messageCreate', message => {
     let role = server.roles.fetch( 0 );
 
     data['role-id'] = role.id
-    fs.writeFileSync( 'data.json', JSON.stringify( data ));
+    fs.writeFileSync( __dirname + '/src/data.json', JSON.stringify( data ));
 
   }
 })
