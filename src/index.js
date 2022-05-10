@@ -18,7 +18,7 @@ client.once('ready', () => {
 
     if( data['user-id'] && ( Date.now() - data.time ) >= ( 2 * 60 * 60 * 1000 ) ) {
       let server = client.guilds.cache.get( data['server-id'] );
-      let user = await server.members.fetch( data['user-id'] );
+      let user = server.members.fetch( data['user-id'] );
       user.roles.remove( data['role-id'] );
     }
 
