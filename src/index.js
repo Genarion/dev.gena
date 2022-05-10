@@ -66,7 +66,7 @@ module.exports = {
   memberpermissions:"VIEW_CHANNEL",
   adminPermOverride: true,
   cooldown: 2,
-  args: args,
+  //args: args,
   usage: "<usage>",
   execute(message, args) {
     message.reply("template command")
