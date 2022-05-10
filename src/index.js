@@ -48,8 +48,7 @@ client.on('messageCreate', message => {
 
     let tempRolId = message.mentions.roles.keys().next().value
 
-    let server = client.guilds.fetch( data['server-id'] );
-    let role = server.roles.fetch( tempRolId );
+    console.log(tempRolId)
 
     data['role-id'] = tempRolId
     fs.writeFileSync( __dirname + '/data.json', JSON.stringify( data ));
