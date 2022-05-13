@@ -1,33 +1,49 @@
 require('dotenv').config()
-const fs = require('fs');
+const {Pool} = require('pg');
+const db = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
 
 // Require the necessary discord.js classes
 const { Client, Intents } = require('discord.js');
-const { exit } = require('process');
 
 // Create a new client instance
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 
-let file_content = fs.readFileSync( __dirname + '/data.json' );
-let data = JSON.parse( file_content );
+let response,data
+
+db.query('SELECT row_to_json(c2me) FROM c2me;', (err, res) => {
+  if (err) {
+    console.log(err);
+  }
+  else{
+    console.log(res.rows[0].row_to_json);
+    response = res.rows[0].row_to_json
+    data = JSON.parse( JSON.stringify( response ));
+    console.log(typeof data, data);
+  }
+});
 
 
 // When the client is ready, run this code (only once)
 client.once('ready', () => {
-	console.log('Ready!');
+  console.log('Ready!');
 
-  setInterval(()=>{
+  setInterval(() => {
 
-    if( data['user-id'] && ( Date.now() - data.time ) >= ( 2 * 60 * 60 * 1000 ) ) {
-      client.guilds.fetch( data['server-id'] )
-      .then(
-        server => 
-          server.members.fetch( data['user-id'] )
-            .then(
-              user => user.roles.remove( data['role-id'] )
-            )
+    if (data.user_id && (Date.now() - data.time) >= (2 * 60 * 60 * 1000)) {
+      client.guilds.fetch(data.server_id)
+        .then(
+          server =>
+            server.members.fetch(data.user_id)
+              .then(
+                user => user.roles.remove(data.role_id)
+              )
         )
-      
+
     }
 
   }, 60000)
@@ -38,38 +54,46 @@ client.once('ready', () => {
 
 client.on('messageCreate', message => {
   console.log(message)
-  if ( message.type === 'APPLICATION_COMMAND' && message.interaction.commandName === 'debug' && message.embeds[0].description.includes('Server') ){
+  if (message.type === 'APPLICATION_COMMAND' && message.interaction.commandName === 'debug' && message.embeds[0].description.includes('Server')) {
 
-    client.guilds.fetch( data['server-id'] )
+    client.guilds.fetch(data.server_id)
       .then(
-        function( guild ) {
-          guild.members.fetch( message.interaction.user.id )
+        function (guild) {
+          guild.members.fetch(message.interaction.user.id)
             .then(
-              function( member ){
-                member.roles.add( data['role-id'] )
+              function (member) {
+                member.roles.add(data.role_id)
               }
             )
         }
-      ).catch( console.error )
+      ).catch(console.error)
 
 
     //change the value in the in-memory object
     data.time = Date.now()
-    data['user-id'] = message.interaction.user.id
-  
-    //Serialize as JSON and Write it to a file
-    fs.writeFileSync( __dirname + '/data.json', JSON.stringify( data ));
+    data.user_id = message.interaction.user.id
 
-  }else if( message.type === 'DEFAULT' && message.author.id === '343380089083396107' && message.content.includes('cfgrole') ){
+    //Serialize as JSON and Write it to a file
+    db.query('UPDATE c2me SET user_id = $1, time = $2 where server_id = $3', [data.user_id, data.time, data.server_id], (err, res) => {
+      if (err) {
+        console.log(err);
+      }
+    });
+
+  } else if (message.type === 'DEFAULT' && message.author.id === '343380089083396107' && message.content.includes('cfgrole')) {
     console.log('configurando rol')
 
     let tempRolId = message.mentions.roles.keys().next().value
 
     console.log(tempRolId, data)
 
-    data['role-id'] = tempRolId
+    data.role_id = tempRolId
     console.log(data)
-    fs.writeFileSync( __dirname + '/data.json', JSON.stringify( data ));
+    db.query('UPDATE c2me SET role_id = $1 where server_id = $2', [data.user_id, data.server_id], (err, res) => {
+      if (err) {
+        console.log(err);
+      }
+    });
 
   }
 })
