@@ -54,7 +54,7 @@ client.once('ready', () => {
 
 client.on('messageCreate', message => {
   console.log(message)
-  if (message.type === 'APPLICATION_COMMAND' && message.interaction.commandName === 'debug' && message.embeds[0].description.includes('Server')) {
+  if (message.type === 'APPLICATION_COMMAND' && message.interaction.commandName === 'bump' && message.embeds[0].description.includes('done')) {
 
     client.guilds.fetch(data.server_id)
       .then(
